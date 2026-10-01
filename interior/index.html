@@ -1,0 +1,188 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Выбор интерьера</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Unbounded:wght@500;600&display=swap">
+<style>
+/* layout: one column feed of full-width photo cards, sticky room tabs, vote bar under each photo */
+:root{--bg:#f6f4f0;--card:#fffdfa;--ink:#24211e;--mut:#7a7168;--line:#e3ddd4;--accent:#2f5d50;--yes:#2f7a4f;--no:#b4473a;
+--disp:"Unbounded",system-ui,sans-serif;--body:"Golos Text",system-ui,-apple-system,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171513;--card:#211e1b;--ink:#efe9e1;--mut:#a39a90;--line:#38332e;--accent:#7fb7a3;--yes:#6cc28f;--no:#e3806f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171513;--card:#211e1b;--ink:#efe9e1;--mut:#a39a90;--line:#38332e;--accent:#7fb7a3;--yes:#6cc28f;--no:#e3806f;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);margin:0}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:20px 80px}
+h1{font:600 24px/1.15 var(--disp);margin:0 0 6px;text-wrap:balance;letter-spacing:-.01em}
+.lead{color:var(--mut);margin:0 0 4px;font-size:15px}
+.status{color:var(--mut);font-size:13px;margin:6px 0 0}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin:14px -16px 0;padding:10px 16px;border-bottom:1px solid var(--line);display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:500 14px var(--body);cursor:pointer;white-space:nowrap}
+nav button[aria-current="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav button small{color:inherit;opacity:.6;margin-left:4px;font-variant-numeric:tabular-nums}
+.filters{display:flex;gap:6px;margin:14px 0 4px;flex-wrap:wrap}
+.filters button{border:0;background:transparent;color:var(--mut);font:500 13px var(--body);padding:6px 10px;border-radius:8px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--line);color:var(--ink)}
+.feed{display:grid;gap:18px;margin-top:10px}
+.feed.tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.card img{display:block;width:100%;height:auto;cursor:zoom-in;background:var(--line)}
+.tiles .card img{aspect-ratio:1/1;object-fit:cover}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 12px}
+.bar .lbl{flex:1;min-width:0;font-size:13px;color:var(--mut);overflow-wrap:anywhere}
+.vote{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:8px 12px;font:600 14px var(--body);cursor:pointer;font-variant-numeric:tabular-nums}
+.tiles .vote{padding:7px 9px}
+.vote svg{width:18px;height:18px}
+.vote.yes[aria-pressed="true"]{background:var(--yes);border-color:var(--yes);color:#fff}
+.vote.no[aria-pressed="true"]{background:var(--no);border-color:var(--no);color:#fff}
+.vote:focus-visible,nav button:focus-visible,.filters button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.who{padding:0 12px 10px;font-size:12px;color:var(--mut)}
+.who b{font-weight:600}
+.empty{color:var(--mut);padding:30px 0;text-align:center}
+.refs-head{display:grid;gap:10px;margin-top:14px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.refs-head label{font-size:13px;color:var(--mut)}
+.refs-head select{font:16px var(--body);padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.upl{display:inline-flex;justify-content:center;align-items:center;gap:8px;background:var(--accent);color:#fff;border-radius:10px;padding:12px 16px;font:600 15px var(--body);cursor:pointer}
+.upl input{position:absolute;opacity:0;width:1px;height:1px}
+.del{margin-left:auto;border:0;background:transparent;color:var(--no);font:500 13px var(--body);cursor:pointer}
+.lb{position:fixed;inset:0;z-index:20;background:rgba(10,9,8,.94);display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.lb img{max-width:100%;max-height:100%;object-fit:contain}
+.lb button{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:999px;width:40px;height:40px;font-size:22px;cursor:pointer}
+@media (prefers-reduced-motion:no-preference){.vote{transition:background .15s,color .15s}}
+
+[hidden]{display:none!important}img{max-width:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.who-box{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.who-box input{font:16px var(--body);padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-width:0;flex:1}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 12px;font:600 14px var(--body);cursor:pointer}
+
+.modes{display:flex;gap:6px;margin:12px 0 0}
+.modes button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px;font:600 14px var(--body);cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.deck{position:relative;margin-top:14px;height:min(62vh,560px)}
+.sc{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:var(--card);border:1px solid var(--line);touch-action:pan-y;user-select:none;-webkit-user-select:none;will-change:transform}
+.sc img{width:100%;height:100%;object-fit:contain;background:var(--line);pointer-events:none;-webkit-user-drag:none}
+.sc.next{transform:scale(.96);opacity:.7}
+.stamp{position:absolute;top:18px;padding:6px 12px;border:3px solid;border-radius:10px;font:700 20px var(--disp);opacity:0;text-transform:uppercase;letter-spacing:.04em}
+.stamp.y{left:16px;color:var(--yes);border-color:var(--yes);transform:rotate(-12deg)}
+.stamp.n{right:16px;color:var(--no);border-color:var(--no);transform:rotate(12deg)}
+.sc .cap{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;font-size:12px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55))}
+.acts{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:16px}
+html,body{overflow-x:hidden}
+.big{font-size:26px;width:64px;height:64px;border-radius:50%;border:2px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.big svg{width:28px;height:28px}
+.big.n{color:var(--no);border-color:var(--no)}.big.y{color:var(--yes);border-color:var(--yes)}
+.big.u{width:46px;height:46px;font:600 13px var(--body)}
+.prog{text-align:center;color:var(--mut);font-size:13px;margin-top:10px;font-variant-numeric:tabular-nums}
+.hint{text-align:center;color:var(--mut);font-size:13px;margin-top:4px}
+</style></head><body>
+<div class="wrap">
+  <h1>Выбор интерьера</h1>
+  <p class="lead">Отметьте, что нравится, а что нет. Ответы сохраняются автоматически.</p>
+  <div class="who-box"><input id="name" placeholder="Ваше имя" autocomplete="given-name"><button class="btn" id="copy">Скопировать результат</button></div>
+  <p class="status" id="status"></p>
+  <nav id="tabs" aria-label="Комнаты"></nav>
+  <div class="modes" role="group" aria-label="Режим"><button id="mSwipe" aria-pressed="true">Свайпы</button><button id="mList" aria-pressed="false">Списком</button></div>
+  <section id="swipe"><div class="deck" id="deck"></div>
+    <div class="acts"><button class="big n" id="bNo" aria-label="Не нравится">✕</button><button class="big u" id="bUndo" aria-label="Отменить">↶</button><button class="big y" id="bYes" aria-label="Нравится">♥</button></div>
+    <p class="prog" id="prog"></p><p class="hint">Вправо — нравится, влево — нет</p></section>
+  <div class="filters" id="filters" role="group" aria-label="Фильтр">
+    <button data-f="all" aria-pressed="true">Все</button><button data-f="none" aria-pressed="false">Без оценки</button><button data-f="yes" aria-pressed="false">Нравится</button><button data-f="no" aria-pressed="false">Не нравится</button>
+  </div>
+  <div class="feed" id="feed"></div>
+</div>
+<div class="lb" id="lb" hidden><img id="lbImg" alt=""><button id="lbClose" aria-label="Закрыть">×</button></div>
+<script id="data" type="application/json">[{"key": "gostinaya", "title": "Кухня-гостиная", "items": [{"id": "gostinaya-01", "src": "img/gostinaya-01.jpg", "w": 856, "h": 737}, {"id": "gostinaya-02", "src": "img/gostinaya-02.jpg", "w": 1115, "h": 960}, {"id": "gostinaya-03", "src": "img/gostinaya-03.jpg", "w": 1115, "h": 960}, {"id": "gostinaya-04", "src": "img/gostinaya-04.jpg", "w": 1115, "h": 960}, {"id": "gostinaya-05", "src": "img/gostinaya-05.jpg", "w": 928, "h": 1135}, {"id": "gostinaya-06", "src": "img/gostinaya-06.jpg", "w": 1400, "h": 689}, {"id": "gostinaya-07", "src": "img/gostinaya-07.jpg", "w": 1115, "h": 960}, {"id": "gostinaya-08", "src": "img/gostinaya-08.jpg", "w": 1115, "h": 960}, {"id": "gostinaya-09", "src": "img/gostinaya-09.jpg", "w": 1115, "h": 960}, {"id": "gostinaya-10", "src": "img/gostinaya-10.jpg", "w": 1115, "h": 960}, {"id": "gostinaya-11", "src": "img/gostinaya-11.jpg", "w": 1115, "h": 960}]}, {"key": "spalnya", "title": "Спальня", "items": [{"id": "spalnya-01", "src": "img/spalnya-01.jpg", "w": 1376, "h": 768}, {"id": "spalnya-02", "src": "img/spalnya-02.jpg", "w": 1066, "h": 711}, {"id": "spalnya-03", "src": "img/spalnya-03.jpg", "w": 1376, "h": 768}, {"id": "spalnya-04", "src": "img/spalnya-04.jpg", "w": 1376, "h": 768}, {"id": "spalnya-05", "src": "img/spalnya-05.jpg", "w": 1376, "h": 768}, {"id": "spalnya-06", "src": "img/spalnya-06.jpg", "w": 1376, "h": 768}, {"id": "spalnya-07", "src": "img/spalnya-07.jpg", "w": 1376, "h": 768}, {"id": "spalnya-08", "src": "img/spalnya-08.jpg", "w": 1376, "h": 768}, {"id": "spalnya-09", "src": "img/spalnya-09.jpg", "w": 1376, "h": 768}]}, {"key": "prihozhaya", "title": "Прихожая", "items": [{"id": "prihozhaya-01", "src": "img/prihozhaya-01.jpg", "w": 921, "h": 1152}, {"id": "prihozhaya-02", "src": "img/prihozhaya-02.jpg", "w": 928, "h": 1152}, {"id": "prihozhaya-03", "src": "img/prihozhaya-03.jpg", "w": 928, "h": 1152}, {"id": "prihozhaya-04", "src": "img/prihozhaya-04.jpg", "w": 1024, "h": 1024}, {"id": "prihozhaya-05", "src": "img/prihozhaya-05.jpg", "w": 928, "h": 1152}, {"id": "prihozhaya-06", "src": "img/prihozhaya-06.jpg", "w": 1024, "h": 1024}, {"id": "prihozhaya-07", "src": "img/prihozhaya-07.jpg", "w": 1344, "h": 784}, {"id": "prihozhaya-08", "src": "img/prihozhaya-08.jpg", "w": 921, "h": 1152}, {"id": "prihozhaya-09", "src": "img/prihozhaya-09.jpg", "w": 921, "h": 1152}, {"id": "prihozhaya-10", "src": "img/prihozhaya-10.jpg", "w": 921, "h": 1152}, {"id": "prihozhaya-11", "src": "img/prihozhaya-11.jpg", "w": 921, "h": 1152}]}, {"key": "sanuzel", "title": "Большой санузел", "items": [{"id": "sanuzel-01", "src": "img/sanuzel-01.jpg", "w": 1376, "h": 768}, {"id": "sanuzel-02", "src": "img/sanuzel-02.jpg", "w": 1376, "h": 768}, {"id": "sanuzel-03", "src": "img/sanuzel-03.jpg", "w": 1376, "h": 768}, {"id": "sanuzel-04", "src": "img/sanuzel-04.jpg", "w": 1376, "h": 768}, {"id": "sanuzel-05", "src": "img/sanuzel-05.jpg", "w": 1376, "h": 768}, {"id": "sanuzel-06", "src": "img/sanuzel-06.jpg", "w": 1024, "h": 1024}, {"id": "sanuzel-07", "src": "img/sanuzel-07.jpg", "w": 1376, "h": 768}, {"id": "sanuzel-08", "src": "img/sanuzel-08.jpg", "w": 1376, "h": 768}, {"id": "sanuzel-09", "src": "img/sanuzel-09.jpg", "w": 1376, "h": 768}, {"id": "sanuzel-10", "src": "img/sanuzel-10.jpg", "w": 1376, "h": 768}, {"id": "sanuzel-11", "src": "img/sanuzel-11.jpg", "w": 1376, "h": 768}]}, {"key": "malyy", "title": "Малый санузел", "items": [{"id": "malyy-01", "src": "img/malyy-01.jpg", "w": 800, "h": 1000}, {"id": "malyy-02", "src": "img/malyy-02.jpg", "w": 928, "h": 1152}, {"id": "malyy-03", "src": "img/malyy-03.jpg", "w": 928, "h": 1152}, {"id": "malyy-04", "src": "img/malyy-04.jpg", "w": 928, "h": 1152}, {"id": "malyy-05", "src": "img/malyy-05.jpg", "w": 928, "h": 1152}]}, {"key": "komnata", "title": "Комната", "items": [{"id": "komnata-01", "src": "img/komnata-01.jpg", "w": 1376, "h": 768}]}, {"key": "plitka", "title": "Плитка", "items": [{"id": "plitka-01", "src": "img/plitka-01.jpg", "w": 600, "h": 800, "label": "№1 · 0600FF0F-9DD6-43B9-9C91-C7F926A88519.webp"}, {"id": "plitka-02", "src": "img/plitka-02.jpg", "w": 600, "h": 800, "label": "№2 · 19242F42-C977-4784-9F53-6B5CF98BA716.webp"}, {"id": "plitka-03", "src": "img/plitka-03.jpg", "w": 600, "h": 800, "label": "№3 · 39A895D6-7C68-4E81-9244-2EB626393E7F.webp"}, {"id": "plitka-04", "src": "img/plitka-04.jpg", "w": 600, "h": 800, "label": "№4 · 3B6C7387-F3D7-4D1D-BF3E-AADA55166824.webp"}, {"id": "plitka-05", "src": "img/plitka-05.jpg", "w": 600, "h": 800, "label": "№5 · 436C2FA6-A60E-4F56-9E1F-BFCEEE47C756.webp"}, {"id": "plitka-06", "src": "img/plitka-06.jpg", "w": 600, "h": 800, "label": "№6 · 732E4BD0-69F8-4F92-8E37-33B5F40D059F.webp"}, {"id": "plitka-07", "src": "img/plitka-07.jpg", "w": 600, "h": 800, "label": "№7 · 7E7CBB3A-52A3-4883-82BD-B31A5F33C906.webp"}, {"id": "plitka-08", "src": "img/plitka-08.jpg", "w": 600, "h": 800, "label": "№8 · 858C799C-D83B-478A-9A26-941D6CF86D83.webp"}, {"id": "plitka-09", "src": "img/plitka-09.jpg", "w": 600, "h": 800, "label": "№9 · 8BC1A99E-0EA1-44F7-8BE5-B46068AB709D.webp"}, {"id": "plitka-10", "src": "img/plitka-10.jpg", "w": 600, "h": 800, "label": "№10 · 9B68CDC4-CA64-4B92-B1E3-8F3ACD6FF673.webp"}, {"id": "plitka-11", "src": "img/plitka-11.jpg", "w": 600, "h": 800, "label": "№11 · 9EF97333-BF62-44B4-B4D2-7B8AB1CAF12C.webp"}, {"id": "plitka-12", "src": "img/plitka-12.jpg", "w": 600, "h": 800, "label": "№12 · A222582E-1CE6-45B6-A207-BA7B76B9F7B4.webp"}, {"id": "plitka-13", "src": "img/plitka-13.jpg", "w": 600, "h": 800, "label": "№13 · B05E9139-A320-4B85-A673-EF6696DED826.webp"}, {"id": "plitka-14", "src": "img/plitka-14.jpg", "w": 600, "h": 800, "label": "№14 · B2628FF3-EC69-4166-AF57-BB0EAFF3ECAD.webp"}, {"id": "plitka-15", "src": "img/plitka-15.jpg", "w": 600, "h": 800, "label": "№15 · BD685EE5-0C8B-463C-960B-64CBDBAA540F.webp"}, {"id": "plitka-16", "src": "img/plitka-16.jpg", "w": 370, "h": 800, "label": "№16 · C9B29657-B3FE-41BB-975E-7B820749408E.webp"}, {"id": "plitka-17", "src": "img/plitka-17.jpg", "w": 600, "h": 800, "label": "№17 · CEA86B43-93B3-47DA-A731-0C3256293E69.webp"}, {"id": "plitka-18", "src": "img/plitka-18.jpg", "w": 600, "h": 800, "label": "№18 · DDE9D3A4-8C7F-43A7-894E-7589A5239AA2.webp"}, {"id": "plitka-19", "src": "img/plitka-19.jpg", "w": 600, "h": 800, "label": "№19 · ED52FC30-C172-46E1-BAAC-25F5C9DDBE25.webp"}, {"id": "plitka-20", "src": "img/plitka-20.jpg", "w": 600, "h": 800, "label": "№20 · F3C4255F-F63E-4351-9154-95CF16E21326.webp"}, {"id": "plitka-21", "src": "img/plitka-21.jpg", "w": 600, "h": 800, "label": "№21 · F4AA8B5B-04E9-4710-9C1E-72CDF57FE334.webp"}, {"id": "plitka-22", "src": "img/plitka-22.jpg", "w": 600, "h": 800, "label": "№22 · IMG_6914.jpeg"}, {"id": "plitka-23", "src": "img/plitka-23.jpg", "w": 600, "h": 800, "label": "№23 · IMG_6915.jpeg"}, {"id": "plitka-24", "src": "img/plitka-24.jpg", "w": 600, "h": 800, "label": "№24 · IMG_6916.jpeg"}, {"id": "plitka-25", "src": "img/plitka-25.jpg", "w": 600, "h": 800, "label": "№25 · IMG_6918.jpeg"}, {"id": "plitka-26", "src": "img/plitka-26.jpg", "w": 370, "h": 800, "label": "№26 · IMG_7438.png"}, {"id": "plitka-27", "src": "img/plitka-27.jpg", "w": 600, "h": 800, "label": "№27 · IMG_7833.jpeg"}, {"id": "plitka-28", "src": "img/plitka-28.jpg", "w": 728, "h": 800, "label": "№28 · IMG_7877.jpeg"}, {"id": "plitka-29", "src": "img/plitka-29.jpg", "w": 370, "h": 800, "label": "№29 · IMG_7884.png"}, {"id": "plitka-30", "src": "img/plitka-30.jpg", "w": 598, "h": 561, "label": "№30 · IMG_7892.jpeg"}, {"id": "plitka-31", "src": "img/plitka-31.jpg", "w": 370, "h": 800, "label": "№31 · IMG_7893.png"}, {"id": "plitka-32", "src": "img/plitka-32.jpg", "w": 600, "h": 800, "label": "№32 · IMG_7895.jpeg"}, {"id": "plitka-33", "src": "img/plitka-33.jpg", "w": 600, "h": 800, "label": "№33 · IMG_7896.jpeg"}, {"id": "plitka-34", "src": "img/plitka-34.jpg", "w": 600, "h": 800, "label": "№34 · IMG_7897.jpeg"}, {"id": "plitka-35", "src": "img/plitka-35.jpg", "w": 600, "h": 800, "label": "№35 · IMG_7898.jpeg"}, {"id": "plitka-36", "src": "img/plitka-36.jpg", "w": 600, "h": 800, "label": "№36 · IMG_7899.jpeg"}, {"id": "plitka-37", "src": "img/plitka-37.jpg", "w": 600, "h": 800, "label": "№37 · IMG_7900.jpeg"}, {"id": "plitka-38", "src": "img/plitka-38.jpg", "w": 600, "h": 800, "label": "№38 · IMG_7901.jpeg"}, {"id": "plitka-39", "src": "img/plitka-39.jpg", "w": 600, "h": 800, "label": "№39 · IMG_7902.jpeg"}]}]</script>
+<script>
+/* Ответы уходят в Google-форму (таблица у владельца). Заполните два значения ниже. */
+const FORM_ACTION = '';   // напр. https://docs.google.com/forms/d/e/XXXX/formResponse
+const FORM_ENTRY  = '';   // напр. entry.123456789
+const ROOMS = JSON.parse(document.getElementById('data').textContent);
+const UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11H3V10h4zM7 10l4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.1 21H7"/></svg>';
+const DOWN = UP.replace('<svg ', '<svg style="transform:rotate(180deg)" ');
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ls = {get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }};
+let votes = ls.get('votes', {}), tab = ls.get('tab', ROOMS[0].key), filter = 'all', mode = ls.get('mode', 'swipe'), hist = [];
+if (!ROOMS.some(r => r.key === tab)) tab = ROOMS[0].key;
+$('name').value = ls.get('name', '');
+$('name').addEventListener('change', () => { ls.set('name', $('name').value.trim()); send(); });
+function renderTabs() {
+  $('tabs').innerHTML = ROOMS.map(r => `<button data-k="${r.key}" aria-current="${r.key === tab}">${esc(r.title)}<small>${r.items.filter(i => votes[i.id]).length}/${r.items.length}</small></button>`).join('');
+}
+function render() {
+  renderTabs();
+  $('mSwipe').setAttribute('aria-pressed', mode === 'swipe'); $('mList').setAttribute('aria-pressed', mode === 'list');
+  $('swipe').hidden = mode !== 'swipe'; $('filters').hidden = mode !== 'list'; $('feed').hidden = mode !== 'list';
+  if (mode === 'swipe') { renderDeck(); return; }
+  const room = ROOMS.find(r => r.key === tab), tiles = tab === 'plitka';
+  $('feed').className = 'feed' + (tiles ? ' tiles' : '');
+  const list = room.items.filter(it => { const v = votes[it.id] || 0; return filter === 'all' || (filter === 'none' && !v) || (filter === 'yes' && v === 1) || (filter === 'no' && v === -1); });
+  $('feed').innerHTML = list.length ? list.map(it => { const v = votes[it.id] || 0; return `<article class="card"><img src="${it.src}" alt="${esc(it.label || it.id)}" loading="lazy" width="${it.w}" height="${it.h}">
+    <div class="bar"><span class="lbl">${esc(it.label || '')}</span>
+    <button class="vote yes" data-id="${it.id}" data-v="1" aria-pressed="${v === 1}" aria-label="Нравится">${UP}</button>
+    <button class="vote no" data-id="${it.id}" data-v="-1" aria-pressed="${v === -1}" aria-label="Не нравится">${DOWN}</button></div></article>`; }).join('') : '<p class="empty">Здесь ничего нет — смените фильтр.</p>';
+}
+function summary() {
+  const name = $('name').value.trim() || 'без имени';
+  const lines = ['Оценки: ' + name];
+  for (const r of ROOMS) { const y = r.items.filter(i => votes[i.id] === 1).map(i => i.id), n = r.items.filter(i => votes[i.id] === -1).map(i => i.id);
+    if (y.length || n.length) lines.push(`${r.title}: нравится ${y.join(', ') || '—'}; не нравится ${n.join(', ') || '—'}`); }
+  return lines.join('\n');
+}
+let timer = null;
+function send() {
+  if (!FORM_ACTION || !FORM_ENTRY) { $('status').textContent = 'Ответы сохраняются на этом телефоне. В конце нажмите «Скопировать результат» и отправьте в мессенджер.'; return; }
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    const body = new URLSearchParams(); body.append(FORM_ENTRY, JSON.stringify({name: $('name').value.trim(), votes, ts: new Date().toISOString()}));
+    fetch(FORM_ACTION, {method: 'POST', mode: 'no-cors', body}).then(() => { $('status').textContent = 'Сохранено'; }).catch(() => { $('status').textContent = 'Нет связи — ответы сохранены на телефоне и отправятся при следующей оценке.'; });
+  }, 1500);
+}
+$('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; tab = b.dataset.k; ls.set('tab', tab); render(); window.scrollTo({top: 0}); });
+$('filters').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; filter = b.dataset.f; [...$('filters').children].forEach(x => x.setAttribute('aria-pressed', x === b)); render(); });
+$('feed').addEventListener('click', e => {
+  const v = e.target.closest('.vote');
+  if (v) { const id = v.dataset.id, val = +v.dataset.v; if (votes[id] === val) delete votes[id]; else votes[id] = val; ls.set('votes', votes); render(); send(); return; }
+  const img = e.target.closest('img'); if (img) { $('lbImg').src = img.src; $('lb').hidden = false; }
+});
+$('lb').addEventListener('click', () => { $('lb').hidden = true; });
+$('copy').addEventListener('click', async () => { const t = summary(); try { await navigator.clipboard.writeText(t); $('status').textContent = 'Скопировано — вставьте в мессенджер.'; } catch (e) { $('status').textContent = t; } });
+
+function queue() { const r = ROOMS.find(r => r.key === tab); return r.items.filter(i => !votes[i.id]); }
+function renderDeck() {
+  const r = ROOMS.find(r => r.key === tab), q = queue();
+  $('prog').textContent = `Оценено ${r.items.length - q.length} из ${r.items.length}`;
+  $('bUndo').disabled = !hist.length;
+  if (!q.length) { $('deck').innerHTML = `<p class="empty">В «${esc(r.title)}» всё оценено. Выберите другую вкладку или посмотрите «Списком».</p>`; return; }
+  $('deck').innerHTML = (q[1] ? `<div class="sc next"><img src="${q[1].src}" alt=""></div>` : '') +
+    `<div class="sc" id="top"><img src="${q[0].src}" alt="${esc(q[0].label || q[0].id)}"><span class="stamp y" id="sy">Нравится</span><span class="stamp n" id="sn">Нет</span>${q[0].label ? `<div class="cap">${esc(q[0].label)}</div>` : ''}</div>`;
+  bindDrag($('top'), q[0].id);
+}
+function decide(id, val, el) {
+  const fly = () => { votes[id] = val; hist.push(id); ls.set('votes', votes); send(); render(); };
+  if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return fly();
+  el.style.transition = 'transform .28s ease-in, opacity .28s'; el.style.transform = `translateX(${val > 0 ? 130 : -130}%) rotate(${val > 0 ? 18 : -18}deg)`; el.style.opacity = '0';
+  setTimeout(fly, 260);
+}
+function bindDrag(el, id) {
+  let x0 = null, y0 = 0, dx = 0, locked = null;
+  el.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; dx = 0; locked = null; el.setPointerCapture(e.pointerId); el.style.transition = 'none'; });
+  el.addEventListener('pointermove', e => {
+    if (x0 === null) return; const ddx = e.clientX - x0, ddy = e.clientY - y0;
+    if (locked === null && (Math.abs(ddx) > 8 || Math.abs(ddy) > 8)) locked = Math.abs(ddx) > Math.abs(ddy) ? 'x' : 'y';
+    if (locked !== 'x') return; dx = ddx;
+    el.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`;
+    $('sy').style.opacity = Math.max(0, Math.min(1, dx / 90)); $('sn').style.opacity = Math.max(0, Math.min(1, -dx / 90));
+  });
+  const end = () => { if (x0 === null) return; x0 = null;
+    if (dx > 90) return decide(id, 1, el); if (dx < -90) return decide(id, -1, el);
+    if (locked !== 'x' && Math.abs(dx) < 5) { $('lbImg').src = el.querySelector('img').src; $('lb').hidden = false; }
+    el.style.transition = 'transform .2s'; el.style.transform = ''; $('sy').style.opacity = 0; $('sn').style.opacity = 0; };
+  el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+}
+$('bYes').addEventListener('click', () => { const q = queue(); if (q[0]) decide(q[0].id, 1, $('top')); });
+$('bNo').addEventListener('click', () => { const q = queue(); if (q[0]) decide(q[0].id, -1, $('top')); });
+$('bUndo').addEventListener('click', () => { const id = hist.pop(); if (!id) return; delete votes[id]; ls.set('votes', votes); send(); render(); });
+$('mSwipe').addEventListener('click', () => { mode = 'swipe'; ls.set('mode', mode); render(); });
+$('mList').addEventListener('click', () => { mode = 'list'; ls.set('mode', mode); render(); });
+document.addEventListener('keydown', e => { if (mode !== 'swipe') return; if (e.key === 'ArrowRight') $('bYes').click(); if (e.key === 'ArrowLeft') $('bNo').click(); });
+render(); send();
+</script></body></html>
