@@ -3,10 +3,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Unbounded:wght@500;600&display=swap">
 <style>
 /* layout: one column feed of full-width photo cards, sticky room tabs, vote bar under each photo */
-:root{--bg:#f6f4f0;--card:#fffdfa;--ink:#24211e;--mut:#7a7168;--line:#e3ddd4;--accent:#2f5d50;--yes:#2f7a4f;--no:#b4473a;
+:root{--bg:#ffffff;--card:#ffffff;--ink:#24211e;--mut:#7a7168;--line:#e3ddd4;--accent:#2f5d50;--yes:#2f7a4f;--no:#b4473a;
 --disp:"Unbounded",system-ui,sans-serif;--body:"Golos Text",system-ui,-apple-system,sans-serif}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171513;--card:#211e1b;--ink:#efe9e1;--mut:#a39a90;--line:#38332e;--accent:#7fb7a3;--yes:#6cc28f;--no:#e3806f;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#171513;--card:#211e1b;--ink:#efe9e1;--mut:#a39a90;--line:#38332e;--accent:#7fb7a3;--yes:#6cc28f;--no:#e3806f;color-scheme:dark}
 body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);margin:0}
 .wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:20px 80px}
 h1{font:600 24px/1.15 var(--disp);margin:0 0 6px;text-wrap:balance;letter-spacing:-.01em}
@@ -151,7 +149,9 @@ function renderDeck() {
   const r = ROOMS.find(r => r.key === tab), q = queue();
   $('prog').textContent = `Оценено ${r.items.length - q.length} из ${r.items.length}`;
   $('bUndo').disabled = !hist.length;
-  if (!q.length) { $('deck').innerHTML = `<p class="empty">В «${esc(r.title)}» всё оценено. Выберите другую вкладку или посмотрите «Списком».</p>`; return; }
+  if (!q.length) { const i = ROOMS.findIndex(x => x.key === tab), nx = [...ROOMS.slice(i + 1), ...ROOMS.slice(0, i)].find(x => x.items.some(it => !votes[it.id]));
+    if (nx) { tab = nx.key; ls.set('tab', tab); window.scrollTo({top: 0}); render(); document.querySelector('nav [aria-current="true"]')?.scrollIntoView({inline: 'center', block: 'nearest'}); $('prog').textContent = `${r.title} — готово. Дальше: ${nx.title}`; return; }
+    $('deck').innerHTML = `<p class="empty">В «${esc(r.title)}» всё оценено — и во всех остальных разделах тоже. Спасибо! Нажмите «Скопировать результат» или посмотрите «Списком».</p>`; return; }
   $('deck').innerHTML = (q[1] ? `<div class="sc next"><img src="${q[1].src}" alt=""></div>` : '') +
     `<div class="sc" id="top"><img src="${q[0].src}" alt="${esc(q[0].label || q[0].id)}"><span class="stamp y" id="sy">Нравится</span><span class="stamp n" id="sn">Нет</span>${q[0].label ? `<div class="cap">${esc(q[0].label)}</div>` : ''}</div>`;
   bindDrag($('top'), q[0].id);
