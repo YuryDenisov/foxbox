@@ -74,7 +74,7 @@ html,body{overflow-x:hidden}
 <div class="wrap">
   <h1>Выбор интерьера</h1>
   <p class="lead">Отметьте, что нравится, а что нет. Ответы сохраняются автоматически.</p>
-  <div class="who-box"><input id="name" placeholder="Ваше имя" autocomplete="given-name"><button class="btn" id="copy">Скопировать результат</button></div>
+  <div class="who-box"><input id="name" placeholder="Ваше имя" autocomplete="given-name"></div>
   <p class="status" id="status"></p>
   <nav id="tabs" aria-label="Комнаты"></nav>
   <div class="modes" role="group" aria-label="Режим"><button id="mSwipe" aria-pressed="true">Свайпы</button><button id="mList" aria-pressed="false">Списком</button></div>
@@ -101,6 +101,7 @@ const ls = {get(k, d) { try { const v = localStorage.getItem(k); return v == nul
 let votes = ls.get('votes', {}), tab = ls.get('tab', ROOMS[0].key), filter = 'all', mode = ls.get('mode', 'swipe'), hist = [];
 if (!ROOMS.some(r => r.key === tab)) tab = ROOMS[0].key;
 $('name').value = ls.get('name', '');
+$('name').addEventListener('input', () => ls.set('name', $('name').value.trim()));
 $('name').addEventListener('change', () => { ls.set('name', $('name').value.trim()); if (Object.keys(votes).length) send(); });
 function renderTabs() {
   $('tabs').innerHTML = ROOMS.map(r => `<button data-k="${r.key}" aria-current="${r.key === tab}">${esc(r.title)}<small>${r.items.filter(i => votes[i.id]).length}/${r.items.length}</small></button>`).join('');
@@ -128,7 +129,7 @@ function summary() {
 let timer = null;
 function send(initial) {
   if (initial && FORM_ACTION) { $('status').textContent = 'Ответы сохраняются автоматически.'; return; }
-  if (!FORM_ACTION || !FORM_ENTRY) { $('status').textContent = 'Ответы сохраняются на этом телефоне. В конце нажмите «Скопировать результат» и отправьте в мессенджер.'; return; }
+  if (!FORM_ACTION || !FORM_ENTRY) { $('status').textContent = 'Ответы сохраняются на этом телефоне.'; return; }
   clearTimeout(timer);
   timer = setTimeout(() => {
     const body = new URLSearchParams(); body.append(FORM_ENTRY, JSON.stringify({name: $('name').value.trim(), votes, ts: new Date().toISOString()}));
@@ -143,7 +144,6 @@ $('feed').addEventListener('click', e => {
   const img = e.target.closest('img'); if (img) { $('lbImg').src = img.src; $('lb').hidden = false; }
 });
 $('lb').addEventListener('click', () => { $('lb').hidden = true; });
-$('copy').addEventListener('click', async () => { const t = summary(); try { await navigator.clipboard.writeText(t); $('status').textContent = 'Скопировано — вставьте в мессенджер.'; } catch (e) { $('status').textContent = t; } });
 
 function queue() { const r = ROOMS.find(r => r.key === tab); return r.items.filter(i => !votes[i.id]); }
 function renderDeck() {
@@ -152,7 +152,7 @@ function renderDeck() {
   $('bUndo').disabled = !hist.length;
   if (!q.length) { const i = ROOMS.findIndex(x => x.key === tab), nx = [...ROOMS.slice(i + 1), ...ROOMS.slice(0, i)].find(x => x.items.some(it => !votes[it.id]));
     if (nx) { tab = nx.key; ls.set('tab', tab); window.scrollTo({top: 0}); render(); document.querySelector('nav [aria-current="true"]')?.scrollIntoView({inline: 'center', block: 'nearest'}); $('prog').textContent = `${r.title} — готово. Дальше: ${nx.title}`; return; }
-    $('deck').innerHTML = `<p class="empty">В «${esc(r.title)}» всё оценено — и во всех остальных разделах тоже. Спасибо! Нажмите «Скопировать результат» или посмотрите «Списком».</p>`; return; }
+    $('deck').innerHTML = `<p class="empty">В «${esc(r.title)}» всё оценено — и во всех остальных разделах тоже. Спасибо, ответы отправлены! Изменить оценки можно в режиме «Списком».</p>`; return; }
   $('deck').innerHTML = (q[1] ? `<div class="sc next"><img src="${q[1].src}" alt=""></div>` : '') +
     `<div class="sc" id="top"><img src="${q[0].src}" alt="${esc(q[0].label || q[0].id)}"><span class="stamp y" id="sy">Нравится</span><span class="stamp n" id="sn">Нет</span>${q[0].label ? `<div class="cap">${esc(q[0].label)}</div>` : ''}</div>`;
   bindDrag($('top'), q[0].id);
