@@ -101,7 +101,7 @@ const ls = {get(k, d) { try { const v = localStorage.getItem(k); return v == nul
 let votes = ls.get('votes', {}), tab = ls.get('tab', ROOMS[0].key), filter = 'all', mode = ls.get('mode', 'swipe'), hist = [];
 if (!ROOMS.some(r => r.key === tab)) tab = ROOMS[0].key;
 $('name').value = ls.get('name', '');
-$('name').addEventListener('change', () => { ls.set('name', $('name').value.trim()); send(); });
+$('name').addEventListener('change', () => { ls.set('name', $('name').value.trim()); if (Object.keys(votes).length) send(); });
 function renderTabs() {
   $('tabs').innerHTML = ROOMS.map(r => `<button data-k="${r.key}" aria-current="${r.key === tab}">${esc(r.title)}<small>${r.items.filter(i => votes[i.id]).length}/${r.items.length}</small></button>`).join('');
 }
@@ -126,7 +126,8 @@ function summary() {
   return lines.join('\n');
 }
 let timer = null;
-function send() {
+function send(initial) {
+  if (initial && FORM_ACTION) { $('status').textContent = 'Ответы сохраняются автоматически.'; return; }
   if (!FORM_ACTION || !FORM_ENTRY) { $('status').textContent = 'Ответы сохраняются на этом телефоне. В конце нажмите «Скопировать результат» и отправьте в мессенджер.'; return; }
   clearTimeout(timer);
   timer = setTimeout(() => {
@@ -184,5 +185,5 @@ $('bUndo').addEventListener('click', () => { const id = hist.pop(); if (!id) ret
 $('mSwipe').addEventListener('click', () => { mode = 'swipe'; ls.set('mode', mode); render(); });
 $('mList').addEventListener('click', () => { mode = 'list'; ls.set('mode', mode); render(); });
 document.addEventListener('keydown', e => { if (mode !== 'swipe') return; if (e.key === 'ArrowRight') $('bYes').click(); if (e.key === 'ArrowLeft') $('bNo').click(); });
-render(); send();
+render(); send(true);
 </script></body></html>
