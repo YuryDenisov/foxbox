@@ -99,6 +99,9 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ls = {get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }};
 let votes = ls.get('votes', {}), tab = ls.get('tab', ROOMS[0].key), filter = 'all', mode = ls.get('mode', 'swipe'), hist = [];
+// drop votes for pictures that are no longer in the set (older rounds)
+{ const ids = new Set(ROOMS.flatMap(r => r.items.map(i => i.id))); for (const k of Object.keys(votes)) if (!ids.has(k)) delete votes[k]; ls.set('votes', votes); }
+let advance = false; // move to the next room only right after the last swipe in a room
 if (!ROOMS.some(r => r.key === tab)) tab = ROOMS[0].key;
 $('name').value = ls.get('name', '');
 $('name').addEventListener('input', () => ls.set('name', $('name').value.trim()));
@@ -150,7 +153,17 @@ function renderDeck() {
   const r = ROOMS.find(r => r.key === tab), q = queue();
   $('prog').textContent = `Оценено ${r.items.length - q.length} из ${r.items.length}`;
   $('bUndo').disabled = !hist.length;
+  const go = advance; advance = false;
   if (!q.length) { const i = ROOMS.findIndex(x => x.key === tab), nx = [...ROOMS.slice(i + 1), ...ROOMS.slice(0, i)].find(x => x.items.some(it => !votes[it.id]));
+    if (!go) {
+      $('deck').innerHTML = `<div class="empty"><p>«${esc(r.title)}» — всё оценено.</p>
+        <p><button class="btn" id="dList">Посмотреть и изменить</button></p>
+        <p><button class="btn" id="dAgain">Оценить заново</button></p>
+        ${nx ? `<p><button class="btn" id="dNext">Дальше: ${esc(nx.title)}</button></p>` : ''}</div>`;
+      $('dList').onclick = () => { mode = 'list'; ls.set('mode', mode); render(); };
+      $('dAgain').onclick = () => { r.items.forEach(it => delete votes[it.id]); hist = []; ls.set('votes', votes); send(); render(); };
+      if (nx) $('dNext').onclick = () => { tab = nx.key; ls.set('tab', tab); render(); document.querySelector('nav [aria-current="true"]')?.scrollIntoView({inline: 'center', block: 'nearest'}); };
+      return; }
     if (nx) { tab = nx.key; ls.set('tab', tab); window.scrollTo({top: 0}); render(); document.querySelector('nav [aria-current="true"]')?.scrollIntoView({inline: 'center', block: 'nearest'}); $('prog').textContent = `${r.title} — готово. Дальше: ${nx.title}`; return; }
     $('deck').innerHTML = `<p class="empty">В «${esc(r.title)}» всё оценено — и во всех остальных разделах тоже. Спасибо, ответы отправлены! Изменить оценки можно в режиме «Списком».</p>`; return; }
   $('deck').innerHTML = (q[1] ? `<div class="sc next"><img src="${q[1].src}" alt=""></div>` : '') +
@@ -158,7 +171,7 @@ function renderDeck() {
   bindDrag($('top'), q[0].id);
 }
 function decide(id, val, el) {
-  const fly = () => { votes[id] = val; hist.push(id); ls.set('votes', votes); send(); render(); };
+  const fly = () => { votes[id] = val; hist.push(id); ls.set('votes', votes); advance = true; send(); render(); };
   if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return fly();
   el.style.transition = 'transform .28s ease-in, opacity .28s'; el.style.transform = `translateX(${val > 0 ? 130 : -130}%) rotate(${val > 0 ? 18 : -18}deg)`; el.style.opacity = '0';
   setTimeout(fly, 260);
