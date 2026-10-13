@@ -1,0 +1,203 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Гостиная — выбор</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Unbounded:wght@500;600&display=swap">
+<style>
+/* layout: one column feed of full-width photo cards, sticky room tabs, vote bar under each photo */
+:root{--bg:#ffffff;--card:#ffffff;--ink:#24211e;--mut:#6f6f6f;--line:#e6e6e6;--accent:#2f5d50;--yes:#2f7a4f;--no:#b4473a;
+--disp:"Unbounded",system-ui,sans-serif;--body:"Golos Text",system-ui,-apple-system,sans-serif}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);margin:0}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:20px 80px}
+h1{font:600 24px/1.15 var(--disp);margin:0 0 6px;text-wrap:balance;letter-spacing:-.01em}
+.lead{color:var(--mut);margin:0 0 4px;font-size:15px}
+.status{color:var(--mut);font-size:13px;margin:6px 0 0}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin:14px -16px 0;padding:10px 16px;border-bottom:1px solid var(--line);display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:500 14px var(--body);cursor:pointer;white-space:nowrap}
+nav button[aria-current="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+nav button small{color:inherit;opacity:.6;margin-left:4px;font-variant-numeric:tabular-nums}
+.filters{display:flex;gap:6px;margin:14px 0 4px;flex-wrap:wrap}
+.filters button{border:0;background:transparent;color:var(--mut);font:500 13px var(--body);padding:6px 10px;border-radius:8px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--line);color:var(--ink)}
+.feed{display:grid;gap:18px;margin-top:10px}
+.feed.tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.card img{display:block;width:100%;height:auto;cursor:zoom-in;background:var(--line)}
+.tiles .card img{aspect-ratio:1/1;object-fit:cover}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 12px}
+.bar .lbl{flex:1;min-width:0;font-size:13px;color:var(--mut);overflow-wrap:anywhere}
+.vote{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:8px 12px;font:600 14px var(--body);cursor:pointer;font-variant-numeric:tabular-nums}
+.tiles .vote{padding:7px 9px}
+.vote svg{width:18px;height:18px}
+.vote.yes[aria-pressed="true"]{background:var(--yes);border-color:var(--yes);color:#fff}
+.vote.no[aria-pressed="true"]{background:var(--no);border-color:var(--no);color:#fff}
+.vote:focus-visible,nav button:focus-visible,.filters button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.who{padding:0 12px 10px;font-size:12px;color:var(--mut)}
+.who b{font-weight:600}
+.empty{color:var(--mut);padding:30px 0;text-align:center}
+.refs-head{display:grid;gap:10px;margin-top:14px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.refs-head label{font-size:13px;color:var(--mut)}
+.refs-head select{font:16px var(--body);padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.upl{display:inline-flex;justify-content:center;align-items:center;gap:8px;background:var(--accent);color:#fff;border-radius:10px;padding:12px 16px;font:600 15px var(--body);cursor:pointer}
+.upl input{position:absolute;opacity:0;width:1px;height:1px}
+.del{margin-left:auto;border:0;background:transparent;color:var(--no);font:500 13px var(--body);cursor:pointer}
+.lb{position:fixed;inset:0;z-index:20;background:rgba(10,9,8,.94);display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.lb img{max-width:100%;max-height:100%;object-fit:contain}
+.lb button{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:999px;width:40px;height:40px;font-size:22px;cursor:pointer}
+@media (prefers-reduced-motion:no-preference){.vote{transition:background .15s,color .15s}}
+
+[hidden]{display:none!important}img{max-width:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.who-box{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.who-box input{font:16px var(--body);padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-width:0;flex:1}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 12px;font:600 14px var(--body);cursor:pointer}
+
+.modes{display:flex;gap:6px;margin:12px 0 0}
+.modes button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px;font:600 14px var(--body);cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.deck{position:relative;margin-top:14px;height:min(62vh,560px)}
+.sc{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:var(--card);border:1px solid var(--line);touch-action:pan-y;user-select:none;-webkit-user-select:none;will-change:transform}
+.sc img{width:100%;height:100%;object-fit:contain;background:#fff;pointer-events:none;-webkit-user-drag:none}
+.sc.next{transform:scale(.96);opacity:.7}
+.stamp{position:absolute;top:18px;padding:6px 12px;border:3px solid;border-radius:10px;font:700 20px var(--disp);opacity:0;text-transform:uppercase;letter-spacing:.04em}
+.stamp.y{left:16px;color:var(--yes);border-color:var(--yes);transform:rotate(-12deg)}
+.stamp.n{right:16px;color:var(--no);border-color:var(--no);transform:rotate(12deg)}
+.sc .cap{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;font-size:12px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55))}
+.acts{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:16px}
+html,body{overflow-x:hidden}
+.big{font-size:26px;width:64px;height:64px;border-radius:50%;border:2px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.big svg{width:28px;height:28px}
+.big.n{color:var(--no);border-color:var(--no)}.big.y{color:var(--yes);border-color:var(--yes)}
+.big.u{width:46px;height:46px;font:600 13px var(--body)}
+.prog{text-align:center;color:var(--mut);font-size:13px;margin-top:10px;font-variant-numeric:tabular-nums}
+.hint{text-align:center;color:var(--mut);font-size:13px;margin-top:4px}
+</style></head><body>
+<div class="wrap">
+  <h1>Гостиная</h1>
+  <p class="lead">Сначала вид на окно, потом вид от окна на кухню. Вправо — нравится, влево — нет. Нажмите на фото, чтобы рассмотреть.</p>
+  <div class="who-box"><input id="name" placeholder="Ваше имя" autocomplete="given-name"></div>
+  <p class="status" id="status"></p>
+  <nav id="tabs" aria-label="Комнаты"></nav>
+  <div class="modes" role="group" aria-label="Режим"><button id="mSwipe" aria-pressed="true">Свайпы</button><button id="mList" aria-pressed="false">Списком</button></div>
+  <section id="swipe"><div class="deck" id="deck"></div>
+    <div class="acts"><button class="big n" id="bNo" aria-label="Не нравится">✕</button><button class="big u" id="bUndo" aria-label="Отменить">↶</button><button class="big y" id="bYes" aria-label="Нравится">♥</button></div>
+    <p class="prog" id="prog"></p><p class="hint">Вправо — нравится, влево — нет</p></section>
+  <div class="filters" id="filters" role="group" aria-label="Фильтр">
+    <button data-f="all" aria-pressed="true">Все</button><button data-f="none" aria-pressed="false">Без оценки</button><button data-f="yes" aria-pressed="false">Нравится</button><button data-f="no" aria-pressed="false">Не нравится</button>
+  </div>
+  <div class="feed" id="feed"></div>
+</div>
+<div class="lb" id="lb" hidden><img id="lbImg" alt=""><button id="lbClose" aria-label="Закрыть">×</button></div>
+<script id="data" type="application/json">[{"key": "okno", "title": "Вид на окно", "items": [{"id": "g2-okno-01", "src": "../img/g2-okno-01.jpg", "label": "1. Последний вариант: ТВ на ореховой тумбе, Vertigo, тонкая чёрная линия, штукатурка", "w": 896, "h": 1195}, {"id": "g2-okno-02", "src": "../img/g2-okno-02.jpg", "label": "2. Прямой диван, ТВ на тумбе, тонкая рамка зонирования", "w": 896, "h": 1195}, {"id": "g2-okno-03", "src": "../img/g2-okno-03.jpg", "label": "3. ТВ и проигрыватель на тумбе", "w": 896, "h": 1195}, {"id": "g2-okno-04", "src": "../img/g2-okno-04.jpg", "label": "4. Проектор и проигрыватель, без ТВ — день", "w": 896, "h": 1195}, {"id": "g2-okno-05", "src": "../img/g2-okno-05.jpg", "label": "5. Проектор — вечер, кино на стене", "w": 896, "h": 1195}, {"id": "g2-okno-06", "src": "../img/g2-okno-06.jpg", "label": "6. Низкая тумба, ТВ и полки над ней", "w": 896, "h": 1195}, {"id": "g2-okno-07", "src": "../img/g2-okno-07.jpg", "label": "7. Без тумбы и ТВ: картина и ваза", "w": 896, "h": 1195}, {"id": "g2-okno-08", "src": "../img/g2-okno-08.jpg", "label": "8. Окно в серо-голубой нише, ТВ, рамка", "w": 896, "h": 1195}, {"id": "g2-okno-09", "src": "../img/g2-okno-09.jpg", "label": "9. Зелёные кресла, круглый стол, ТВ", "w": 896, "h": 1195}, {"id": "g2-okno-10", "src": "../img/g2-okno-10.jpg", "label": "10. Зелёные кресла, круглый стол — другой ракурс", "w": 896, "h": 1195}, {"id": "g2-okno-11", "src": "../img/g2-okno-11.jpg", "label": "11. Два кресла у столика, проигрыватель", "w": 896, "h": 943}, {"id": "g2-okno-12", "src": "../img/g2-okno-12.jpg", "label": "12. Два кресла вместо стола", "w": 896, "h": 1195}, {"id": "g2-okno-13", "src": "../img/g2-okno-13.jpg", "label": "13. Диван у окна, ТВ на стене слева", "w": 896, "h": 1195}, {"id": "g2-okno-14", "src": "../img/g2-okno-14.jpg", "label": "14. Тумба с ТВ, стеллаж с подсветкой, люстра-тарелка", "w": 896, "h": 1195}, {"id": "g2-okno-15", "src": "../img/g2-okno-15.jpg", "label": "15. Полки над тумбой, ТВ", "w": 896, "h": 1195}, {"id": "g2-okno-16", "src": "../img/g2-okno-16.jpg", "label": "16. Стеллаж с подсветкой у окна, ТВ", "w": 896, "h": 1195}, {"id": "g2-okno-17", "src": "../img/g2-okno-17.jpg", "label": "17. Угловой диван, высокие шкафы у входа", "w": 896, "h": 1195}, {"id": "g2-okno-18", "src": "../img/g2-okno-18.jpg", "label": "18. Угловой диван, овальный стол, камин-тумба", "w": 896, "h": 1195}, {"id": "g2-okno-19", "src": "../img/g2-okno-19.jpg", "label": "19. Остров-полуостров с голубым потолком", "w": 896, "h": 1195}, {"id": "g2-okno-20", "src": "../img/g2-okno-20.jpg", "label": "20. Полуостров, голубой потолок — вид из проёма", "w": 896, "h": 1195}]}, {"key": "kuhnya", "title": "Вид от окна на кухню", "items": [{"id": "g2-kuhnya-01", "src": "../img/g2-kuhnya-01.jpg", "label": "1. Последний вариант: ореховая кухня, стеклянная колонна, Vertigo, штукатурка", "w": 896, "h": 1195}, {"id": "g2-kuhnya-02", "src": "../img/g2-kuhnya-02.jpg", "label": "2. То же, белые стены, без Vertigo", "w": 896, "h": 1195}, {"id": "g2-kuhnya-03", "src": "../img/g2-kuhnya-03.jpg", "label": "3. Ореховая кухня, стеклянная колонна", "w": 896, "h": 1195}, {"id": "g2-kuhnya-04", "src": "../img/g2-kuhnya-04.jpg", "label": "4. Ореховая кухня, колонна из ореха", "w": 896, "h": 1195}, {"id": "g2-kuhnya-05", "src": "../img/g2-kuhnya-05.jpg", "label": "5. Ореховая кухня, тёмная витрина", "w": 896, "h": 1195}, {"id": "g2-kuhnya-06", "src": "../img/g2-kuhnya-06.jpg", "label": "6. Тёмная витрина — другой ракурс", "w": 896, "h": 1195}, {"id": "g2-kuhnya-07", "src": "../img/g2-kuhnya-07.jpg", "label": "7. Светлый дуб, белая колонна", "w": 896, "h": 1195}, {"id": "g2-kuhnya-08", "src": "../img/g2-kuhnya-08.jpg", "label": "8. Светлая кухня, беленый дуб", "w": 896, "h": 1195}, {"id": "g2-kuhnya-09", "src": "../img/g2-kuhnya-09.jpg", "label": "9. Кухня из дуба, белый простенок", "w": 768, "h": 1024}, {"id": "g2-kuhnya-10", "src": "../img/g2-kuhnya-10.jpg", "label": "10. Кухня из дуба, лампа PH", "w": 896, "h": 1195}, {"id": "g2-kuhnya-11", "src": "../img/g2-kuhnya-11.jpg", "label": "11. Кухня с подсветкой фартука, круглый ковёр", "w": 921, "h": 1152}, {"id": "g2-kuhnya-12", "src": "../img/g2-kuhnya-12.jpg", "label": "12. Кухня с подсветкой, круглый ковёр — тёплый свет", "w": 921, "h": 1152}, {"id": "g2-kuhnya-13", "src": "../img/g2-kuhnya-13.jpg", "label": "13. Два кресла вместо дивана, ореховая кухня", "w": 896, "h": 1195}, {"id": "g2-kuhnya-14", "src": "../img/g2-kuhnya-14.jpg", "label": "14. Два кресла, тёмная витрина", "w": 896, "h": 1195}, {"id": "g2-kuhnya-15", "src": "../img/g2-kuhnya-15.jpg", "label": "15. Диван поперёк комнаты, спиной к окну", "w": 896, "h": 1195}, {"id": "g2-kuhnya-16", "src": "../img/g2-kuhnya-16.jpg", "label": "16. Диван-перегородка, светлая кухня", "w": 896, "h": 1195}, {"id": "g2-kuhnya-17", "src": "../img/g2-kuhnya-17.jpg", "label": "17. Диван-перегородка — другой вариант", "w": 896, "h": 1195}]}]</script>
+<script>
+/* Ответы уходят в Google-форму (таблица у владельца). Заполните два значения ниже. */
+const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSf0fpu6bYX8AfbI0DWtXiViWGJpiZCAC7_vtrAKPLAi6q84wA/formResponse';   // напр. https://docs.google.com/forms/d/e/XXXX/formResponse
+const FORM_ENTRY  = 'entry.2073883489';   // напр. entry.123456789
+const ROOMS = JSON.parse(document.getElementById('data').textContent);
+const UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11H3V10h4zM7 10l4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.1 21H7"/></svg>';
+const DOWN = UP.replace('<svg ', '<svg style="transform:rotate(180deg)" ');
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const U = (new URLSearchParams(location.search).get('u') || '').replace(/[^a-z0-9]/gi, '').slice(0, 20), WHO = {yury: 'Юрий', zhena: 'Жена'}[U] || '', P = 'g2-' + (U || 'x') + '-';
+const ls = {get(k, d) { try { const v = localStorage.getItem(P + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(P + k, JSON.stringify(v)); } catch (e) {} }};
+let votes = ls.get('votes', {}), tab = ls.get('tab', ROOMS[0].key), filter = 'all', mode = ls.get('mode', 'swipe'), hist = [];
+// drop votes for pictures that are no longer in the set (older rounds)
+{ const ids = new Set(ROOMS.flatMap(r => r.items.map(i => i.id))); for (const k of Object.keys(votes)) if (!ids.has(k)) delete votes[k]; ls.set('votes', votes); }
+let advance = false; // move to the next room only right after the last swipe in a room
+if (!ROOMS.some(r => r.key === tab)) tab = ROOMS[0].key;
+$('name').value = ls.get('name', '') || WHO;
+$('name').addEventListener('input', () => ls.set('name', $('name').value.trim()));
+$('name').addEventListener('change', () => { ls.set('name', $('name').value.trim()); if (Object.keys(votes).length) send(); });
+function renderTabs() {
+  $('tabs').innerHTML = ROOMS.map(r => `<button data-k="${r.key}" aria-current="${r.key === tab}">${esc(r.title)}<small>${r.items.filter(i => votes[i.id]).length}/${r.items.length}</small></button>`).join('');
+}
+function render() {
+  renderTabs();
+  $('mSwipe').setAttribute('aria-pressed', mode === 'swipe'); $('mList').setAttribute('aria-pressed', mode === 'list');
+  $('swipe').hidden = mode !== 'swipe'; $('filters').hidden = mode !== 'list'; $('feed').hidden = mode !== 'list';
+  if (mode === 'swipe') { renderDeck(); return; }
+  const room = ROOMS.find(r => r.key === tab), tiles = tab === 'plitka';
+  $('feed').className = 'feed' + (tiles ? ' tiles' : '');
+  const list = room.items.filter(it => { const v = votes[it.id] || 0; return filter === 'all' || (filter === 'none' && !v) || (filter === 'yes' && v === 1) || (filter === 'no' && v === -1); });
+  $('feed').innerHTML = list.length ? list.map(it => { const v = votes[it.id] || 0; return `<article class="card"><img src="${it.src}" alt="${esc(it.label || it.id)}" loading="lazy" width="${it.w}" height="${it.h}">
+    <div class="bar"><span class="lbl">${esc(it.label || '')}</span>
+    <button class="vote yes" data-id="${it.id}" data-v="1" aria-pressed="${v === 1}" aria-label="Нравится">${UP}</button>
+    <button class="vote no" data-id="${it.id}" data-v="-1" aria-pressed="${v === -1}" aria-label="Не нравится">${DOWN}</button></div></article>`; }).join('') : '<p class="empty">Здесь ничего нет — смените фильтр.</p>';
+}
+function summary() {
+  const name = $('name').value.trim() || 'без имени';
+  const lines = ['Оценки: ' + name];
+  for (const r of ROOMS) { const y = r.items.filter(i => votes[i.id] === 1).map(i => i.id), n = r.items.filter(i => votes[i.id] === -1).map(i => i.id);
+    if (y.length || n.length) lines.push(`${r.title}: нравится ${y.join(', ') || '—'}; не нравится ${n.join(', ') || '—'}`); }
+  return lines.join('\n');
+}
+let timer = null;
+function send(initial) {
+  if (initial && FORM_ACTION) { $('status').textContent = 'Ответы сохраняются автоматически.'; return; }
+  if (!FORM_ACTION || !FORM_ENTRY) { $('status').textContent = 'Ответы сохраняются на этом телефоне.'; return; }
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    const body = new URLSearchParams(); body.append(FORM_ENTRY, JSON.stringify({type: 'gostinaya', who: U, name: $('name').value.trim(), votes, ts: new Date().toISOString()}));
+    fetch(FORM_ACTION, {method: 'POST', mode: 'no-cors', body}).then(() => { $('status').textContent = 'Сохранено'; }).catch(() => { $('status').textContent = 'Нет связи — ответы сохранены на телефоне и отправятся при следующей оценке.'; });
+  }, 1500);
+}
+$('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; tab = b.dataset.k; ls.set('tab', tab); render(); window.scrollTo({top: 0}); });
+$('filters').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; filter = b.dataset.f; [...$('filters').children].forEach(x => x.setAttribute('aria-pressed', x === b)); render(); });
+$('feed').addEventListener('click', e => {
+  const v = e.target.closest('.vote');
+  if (v) { const id = v.dataset.id, val = +v.dataset.v; if (votes[id] === val) delete votes[id]; else votes[id] = val; ls.set('votes', votes); render(); send(); return; }
+  const img = e.target.closest('img'); if (img) { $('lbImg').src = img.src; $('lb').hidden = false; }
+});
+$('lb').addEventListener('click', () => { $('lb').hidden = true; });
+
+function queue() { const r = ROOMS.find(r => r.key === tab); return r.items.filter(i => !votes[i.id]); }
+function renderDeck() {
+  const r = ROOMS.find(r => r.key === tab), q = queue();
+  $('prog').textContent = `Оценено ${r.items.length - q.length} из ${r.items.length}`;
+  $('bUndo').disabled = !hist.length;
+  const go = advance; advance = false;
+  if (!q.length) { const i = ROOMS.findIndex(x => x.key === tab), nx = [...ROOMS.slice(i + 1), ...ROOMS.slice(0, i)].find(x => x.items.some(it => !votes[it.id]));
+    if (!go) {
+      $('deck').innerHTML = `<div class="empty"><p>«${esc(r.title)}» — всё оценено.</p>
+        <p><button class="btn" id="dList">Посмотреть и изменить</button></p>
+        <p><button class="btn" id="dAgain">Оценить заново</button></p>
+        ${nx ? `<p><button class="btn" id="dNext">Дальше: ${esc(nx.title)}</button></p>` : ''}</div>`;
+      $('dList').onclick = () => { mode = 'list'; ls.set('mode', mode); render(); };
+      $('dAgain').onclick = () => { r.items.forEach(it => delete votes[it.id]); hist = []; ls.set('votes', votes); send(); render(); };
+      if (nx) $('dNext').onclick = () => { tab = nx.key; ls.set('tab', tab); render(); document.querySelector('nav [aria-current="true"]')?.scrollIntoView({inline: 'center', block: 'nearest'}); };
+      return; }
+    if (nx) { tab = nx.key; ls.set('tab', tab); window.scrollTo({top: 0}); render(); document.querySelector('nav [aria-current="true"]')?.scrollIntoView({inline: 'center', block: 'nearest'}); $('prog').textContent = `${r.title} — готово. Дальше: ${nx.title}`; return; }
+    $('deck').innerHTML = `<p class="empty">В «${esc(r.title)}» всё оценено — и во всех остальных разделах тоже. Спасибо, ответы отправлены! Изменить оценки можно в режиме «Списком».</p>`; return; }
+  $('deck').innerHTML = (q[1] ? `<div class="sc next"><img src="${q[1].src}" alt=""></div>` : '') +
+    `<div class="sc" id="top"><img src="${q[0].src}" alt="${esc(q[0].label || q[0].id)}"><span class="stamp y" id="sy">Нравится</span><span class="stamp n" id="sn">Нет</span>${q[0].label ? `<div class="cap">${esc(q[0].label)}</div>` : ''}</div>`;
+  bindDrag($('top'), q[0].id);
+}
+function decide(id, val, el) {
+  const fly = () => { votes[id] = val; hist.push(id); ls.set('votes', votes); advance = true; send(); render(); };
+  if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return fly();
+  el.style.transition = 'transform .28s ease-in, opacity .28s'; el.style.transform = `translateX(${val > 0 ? 130 : -130}%) rotate(${val > 0 ? 18 : -18}deg)`; el.style.opacity = '0';
+  setTimeout(fly, 260);
+}
+function bindDrag(el, id) {
+  let x0 = null, y0 = 0, dx = 0, locked = null;
+  el.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; dx = 0; locked = null; el.setPointerCapture(e.pointerId); el.style.transition = 'none'; });
+  el.addEventListener('pointermove', e => {
+    if (x0 === null) return; const ddx = e.clientX - x0, ddy = e.clientY - y0;
+    if (locked === null && (Math.abs(ddx) > 8 || Math.abs(ddy) > 8)) locked = Math.abs(ddx) > Math.abs(ddy) ? 'x' : 'y';
+    if (locked !== 'x') return; dx = ddx;
+    el.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`;
+    $('sy').style.opacity = Math.max(0, Math.min(1, dx / 90)); $('sn').style.opacity = Math.max(0, Math.min(1, -dx / 90));
+  });
+  const end = () => { if (x0 === null) return; x0 = null;
+    if (dx > 90) return decide(id, 1, el); if (dx < -90) return decide(id, -1, el);
+    if (locked !== 'x' && Math.abs(dx) < 5) { $('lbImg').src = el.querySelector('img').src; $('lb').hidden = false; }
+    el.style.transition = 'transform .2s'; el.style.transform = ''; $('sy').style.opacity = 0; $('sn').style.opacity = 0; };
+  el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+}
+$('bYes').addEventListener('click', () => { const q = queue(); if (q[0]) decide(q[0].id, 1, $('top')); });
+$('bNo').addEventListener('click', () => { const q = queue(); if (q[0]) decide(q[0].id, -1, $('top')); });
+$('bUndo').addEventListener('click', () => { const id = hist.pop(); if (!id) return; delete votes[id]; ls.set('votes', votes); send(); render(); });
+$('mSwipe').addEventListener('click', () => { mode = 'swipe'; ls.set('mode', mode); render(); });
+$('mList').addEventListener('click', () => { mode = 'list'; ls.set('mode', mode); render(); });
+document.addEventListener('keydown', e => { if (mode !== 'swipe') return; if (e.key === 'ArrowRight') $('bYes').click(); if (e.key === 'ArrowLeft') $('bNo').click(); });
+render(); send(true);
+</script></body></html>
